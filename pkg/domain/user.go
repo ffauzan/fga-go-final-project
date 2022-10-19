@@ -53,6 +53,7 @@ type UserRepository interface {
 type AuthService interface {
 	// GenerateToken(user *User) (*string, error)
 	GenerateToken(userID uint) (string, error)
+	ValidateToken(token string) (uint, error)
 	// IsTokenValid(token string) (bool, error)
 	// GetUserIDFromToken(token string) (uint, error)
 	// IsUserCanCreate(userID uint, entity *interface{}) bool

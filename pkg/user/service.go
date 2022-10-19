@@ -97,7 +97,6 @@ func (s *service) Login(user *domain.LoginRequest) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Println(userFromDB)
 
 	// verify password
 	err = s.cryptoService.VerifyPassword(user.Password, userFromDB.Password)

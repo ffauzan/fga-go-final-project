@@ -2,7 +2,6 @@ package crypto
 
 import (
 	"final-project/pkg/domain"
-	"log"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -20,7 +19,5 @@ func (s *service) HashPassword(password string) (string, error) {
 }
 
 func (s *service) VerifyPassword(plaintext string, hashed string) error {
-	log.Println("plaintext: ", plaintext)
-	log.Println("hashed: ", hashed)
 	return bcrypt.CompareHashAndPassword([]byte(hashed), []byte(plaintext))
 }

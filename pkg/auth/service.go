@@ -36,3 +36,20 @@ func (s *service) GenerateToken(userID uint) (string, error) {
 }
 
 // ValidateToken is a function to validate JWT token
+func (s *service) ValidateToken(tokenString string) (uint, error) {
+	claims := &JwtCustomClaims{}
+
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+
+	if err != nil {
+		return 0, err
+	}
+
+	if !token.Valid {
+		return 0, err
+	}
+
+	return claims.UserID, nil
+}

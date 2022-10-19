@@ -69,10 +69,12 @@ func (r *UserRepository) GetUserByID(userID uint) (*domain.User, error) {
 	}
 
 	user := domain.User{
-		ID:       dbUser.ID,
-		Username: dbUser.Username,
-		Email:    dbUser.Email,
-		Age:      dbUser.Age,
+		ID:        dbUser.ID,
+		Username:  dbUser.Username,
+		Email:     dbUser.Email,
+		Age:       dbUser.Age,
+		CreatedAt: dbUser.CreatedAt,
+		UpdatedAt: dbUser.UpdatedAt,
 	}
 
 	return &user, nil
@@ -106,19 +108,14 @@ func (r *UserRepository) DeleteUserByID(userID uint) error {
 }
 
 func (r *UserRepository) UpdateUser(user *domain.User) (*domain.User, error) {
-	dbUser := User{
-		ID:       user.ID,
-		Username: user.Username,
-		Email:    user.Email,
-		Age:      user.Age,
-	}
-
-	err := r.db.Save(&dbUser).Error
+	err := r.db.Model(&User{}).Where("id = ?", user.ID).Updates(User{
+		Username:  user.Username,
+		Email:     user.Email,
+		UpdatedAt: time.Now(),
+	}).Error
 	if err != nil {
 		return nil, err
 	}
-
-	user.UpdatedAt = dbUser.UpdatedAt
 
 	return user, nil
 }

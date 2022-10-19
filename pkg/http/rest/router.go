@@ -12,18 +12,31 @@ type BaseResponse struct {
 	Data    interface{} `json:"data"`
 }
 
-func NewRouter(userService *domain.UserService) *gin.Engine {
+func NewRouter(
+	userService *domain.UserService,
+	authService *domain.AuthService,
+) *gin.Engine {
 	r := gin.Default()
 
 	// User handler routes
 	userHandler := NewUserHandler(*userService)
-	r.POST("/users/register", userHandler.Register)
-	r.POST("/users/login", userHandler.Login)
+	userRouter := r.Group("/users")
+	{
+		userRouter.POST("/register", userHandler.Register)
+		userRouter.POST("/login", userHandler.Login)
+
+		protectedUserRouter := userRouter.Group("/")
+		{
+			protectedUserRouter.Use(AuthMiddleware(*authService))
+			protectedUserRouter.PUT("/:id", userHandler.UpdateUser)
+			// r.DELETE("/:id", userHandler.DeleteUser)
+		}
+	}
 
 	return r
 }
 
-// // Function to send error response
+// Function to send error response
 func SendErrorResponse(c *gin.Context, err error, code int) {
 	c.JSON(code, BaseResponse{
 		Status:  "error",

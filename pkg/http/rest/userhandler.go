@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"errors"
 	"final-project/pkg/domain"
 	"net/http"
 	"strconv"
@@ -103,6 +104,14 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
+	// Compare userID from path param and userID from context
+	// If they are not equal, return error
+	currentUserID := c.MustGet("currentUserID").(uint)
+	if uint(userID) != currentUserID {
+		SendErrorResponse(c, errors.New("unauthorized"), http.StatusUnauthorized)
+		return
+	}
+
 	user, err := h.userService.UpdateUser(uint(userID), &domain.UpdateUserRequest{
 		Username: req.Username,
 		Email:    req.Email,
@@ -112,10 +121,9 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, BaseResponse{
-		Status:  "success",
-		Message: "user updated",
-		Data:    user,
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"email":    user.Email,
+		"username": user.Username,
 	})
 
 }
