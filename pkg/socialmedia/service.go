@@ -1,13 +1,21 @@
 package socialmedia
 
-import "errors"
+import (
+	"errors"
+	"final-project/pkg/domain"
+)
+
+type AddSocialMediaRequest struct {
+	Name           string
+	SocialMediaUrl string
+}
 
 type Repository interface {
-	SaveSocialMedia(socialMedia *SocialMedia) (*SocialMedia, error)
-	GetSocialMediaByID(socialMediaID uint) (*SocialMedia, error)
-	GetSocialMediasOfUser(userId uint) (*[]SocialMedia, error)
+	SaveSocialMedia(socialMedia *domain.SocialMedia) (*domain.SocialMedia, error)
+	GetSocialMediaByID(socialMediaID uint) (*domain.SocialMedia, error)
+	GetSocialMediasOfUser(userId uint) (*[]domain.SocialMedia, error)
 	DeleteSocialMedia(socialMediaID uint) error
-	UpdateSocialMedia(socialMedia *SocialMedia) (*SocialMedia, error)
+	UpdateSocialMedia(socialMedia *domain.SocialMedia) (*domain.SocialMedia, error)
 }
 
 type AuthService interface {
@@ -18,10 +26,10 @@ type AuthService interface {
 }
 
 type Service interface {
-	AddSocialMedia(userID uint, req *AddSocialMediaRequest) (*SocialMedia, error)
-	GetSocialMedia(socialMediaID uint) (*SocialMedia, error)
-	GetSocialMedias(userID uint) (*[]SocialMedia, error)
-	UpdateSocialMedia(userID uint, socialMediaID uint, req AddSocialMediaRequest) (*SocialMedia, error)
+	AddSocialMedia(userID uint, req *AddSocialMediaRequest) (*domain.SocialMedia, error)
+	GetSocialMedia(socialMediaID uint) (*domain.SocialMedia, error)
+	GetSocialMedias(userID uint) (*[]domain.SocialMedia, error)
+	UpdateSocialMedia(userID uint, socialMediaID uint, req AddSocialMediaRequest) (*domain.SocialMedia, error)
 	DeleteSocialMedia(userID uint, socialMediaID uint) error
 
 	// IsSocialMediaExist(uint) bool
@@ -39,9 +47,9 @@ func NewService(repo Repository, authService AuthService) Service {
 	}
 }
 
-func (s *service) AddSocialMedia(userID uint, req *AddSocialMediaRequest) (*SocialMedia, error) {
+func (s *service) AddSocialMedia(userID uint, req *AddSocialMediaRequest) (*domain.SocialMedia, error) {
 	// create social media
-	socialMedia := &SocialMedia{
+	socialMedia := &domain.SocialMedia{
 		Name:           req.Name,
 		SocialMediaUrl: req.SocialMediaUrl,
 		UserID:         userID,
@@ -50,15 +58,15 @@ func (s *service) AddSocialMedia(userID uint, req *AddSocialMediaRequest) (*Soci
 	return s.repo.SaveSocialMedia(socialMedia)
 }
 
-func (s *service) GetSocialMedia(socialMediaID uint) (*SocialMedia, error) {
+func (s *service) GetSocialMedia(socialMediaID uint) (*domain.SocialMedia, error) {
 	return s.repo.GetSocialMediaByID(socialMediaID)
 }
 
-func (s *service) GetSocialMedias(userID uint) (*[]SocialMedia, error) {
+func (s *service) GetSocialMedias(userID uint) (*[]domain.SocialMedia, error) {
 	return s.repo.GetSocialMediasOfUser(userID)
 }
 
-func (s *service) UpdateSocialMedia(userID uint, socialMediaID uint, req AddSocialMediaRequest) (*SocialMedia, error) {
+func (s *service) UpdateSocialMedia(userID uint, socialMediaID uint, req AddSocialMediaRequest) (*domain.SocialMedia, error) {
 	// get social media
 	socialMedia, err := s.repo.GetSocialMediaByID(socialMediaID)
 	if err != nil {

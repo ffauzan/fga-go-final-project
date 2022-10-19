@@ -2,17 +2,8 @@ package user
 
 import (
 	"errors"
+	"final-project/pkg/domain"
 )
-
-type Repository interface {
-	SaveUser(user *User) (*User, error)
-	GetUserByID(userID uint) (*User, error)
-	GetUserByUsername(username string) (*User, error)
-	DeleteUserByID(userID uint) error
-	UpdateUser(userID *User) (*User, error)
-	IsUsernameExist(username string) bool
-	IsEmailExist(email string) bool
-}
 
 type CryptoService interface {
 	HashPassword(password string) (string, error)
@@ -20,13 +11,13 @@ type CryptoService interface {
 }
 
 type ValidatorService interface {
-	ValidateUser(user *User) error
-	ValidateLoginRequest(req *LoginRequest) error
-	ValidateRegisterRequest(req *RegisterRequest) error
+	ValidateUser(user *domain.User) error
+	ValidateLoginRequest(req *domain.LoginRequest) error
+	ValidateRegisterRequest(req *domain.RegisterRequest) error
 }
 
 type AuthService interface {
-	GenerateToken(user *User) (*string, error)
+	GenerateToken(user *domain.User) (*string, error)
 	IsTokenValid(token string) (bool, error)
 	GetUserIDFromToken(token string) (uint, error)
 	IsUserCanCreate(userID uint, entity *interface{}) bool
@@ -35,22 +26,19 @@ type AuthService interface {
 	IsUserCanDelete(userID uint, entity *interface{}) bool
 }
 
-type Service interface {
-	DeleteUser(userID uint) error
-	UpdateUser(userID uint, req *UpdateUserRequest) (*User, error)
-	IsUserExist(userID uint) bool
-	Register(req *RegisterRequest) (*User, error)
-	Login(req *LoginRequest) (*string, error)
-}
-
 type service struct {
-	repo          Repository
+	repo          domain.UserRepository
 	cryptoService CryptoService
 	authService   AuthService
 	validator     ValidatorService
 }
 
-func NewService(repo Repository, cryptoService CryptoService, authService AuthService, validatorService ValidatorService) Service {
+func NewService(
+	repo domain.UserRepository,
+	cryptoService CryptoService,
+	authService AuthService,
+	validatorService ValidatorService,
+) domain.UserService {
 	return &service{
 		repo:          repo,
 		cryptoService: cryptoService,
@@ -67,7 +55,7 @@ func (s *service) DeleteUser(userID uint) error {
 	return s.repo.DeleteUserByID(userID)
 }
 
-func (s *service) UpdateUser(userID uint, user *UpdateUserRequest) (*User, error) {
+func (s *service) UpdateUser(userID uint, user *domain.UpdateUserRequest) (*domain.User, error) {
 	// get user from db by id
 	userFromDB, err := s.repo.GetUserByID(userID)
 	if err != nil {
@@ -86,7 +74,7 @@ func (s *service) IsUserExist(id uint) bool {
 	return err == nil
 }
 
-func (s *service) Register(req *RegisterRequest) (*User, error) {
+func (s *service) Register(req *domain.RegisterRequest) (*domain.User, error) {
 	// check if username & email already exist
 	if s.repo.IsUsernameExist(req.Username) {
 		return nil, errors.New("username already exist")
@@ -102,7 +90,7 @@ func (s *service) Register(req *RegisterRequest) (*User, error) {
 	}
 
 	// save user
-	userToSave := &User{
+	userToSave := &domain.User{
 		Username: req.Username,
 		Email:    req.Email,
 		Age:      req.Age,
@@ -111,7 +99,7 @@ func (s *service) Register(req *RegisterRequest) (*User, error) {
 	return s.repo.SaveUser(userToSave)
 }
 
-func (s *service) Login(user *LoginRequest) (*string, error) {
+func (s *service) Login(user *domain.LoginRequest) (*string, error) {
 	// validate login request
 	if err := s.validator.ValidateLoginRequest(user); err != nil {
 		return nil, err

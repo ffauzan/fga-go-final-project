@@ -1,4 +1,4 @@
-package socialmedia
+package domain
 
 import "time"
 
@@ -9,9 +9,4 @@ type SocialMedia struct {
 	UserID         uint
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
-}
-
-type AddSocialMediaRequest struct {
-	Name           string
-	SocialMediaUrl string
 }

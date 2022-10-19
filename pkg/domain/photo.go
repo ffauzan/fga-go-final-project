@@ -1,4 +1,4 @@
-package photo
+package domain
 
 import "time"
 
@@ -11,13 +11,4 @@ type Photo struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	Comments  []Comment
-}
-
-type Comment struct {
-	ID        uint
-	UserID    uint
-	PhotoID   uint
-	Message   string
-	CreatedAt time.Time
-	UpdatedAt time.Time
 }

@@ -2,36 +2,38 @@ package photo
 
 import (
 	"errors"
+
+	"final-project/pkg/domain"
 )
 
 type Repository interface {
-	SavePhoto(*Photo) (*Photo, error)
-	GetPhoto(uint) (*Photo, error)
-	GetPhotos() ([]Photo, error)
+	SavePhoto(*domain.Photo) (*domain.Photo, error)
+	GetPhoto(uint) (*domain.Photo, error)
+	GetPhotos() ([]domain.Photo, error)
 	DeletePhoto(uint) error
-	UpdatePhoto(*Photo) (*Photo, error)
+	UpdatePhoto(*domain.Photo) (*domain.Photo, error)
 
-	SaveComment(*Comment) (*Comment, error)
-	GetComment(uint) (*Comment, error)
-	GetComments() ([]Comment, error)
+	SaveComment(*domain.Comment) (*domain.Comment, error)
+	GetComment(uint) (*domain.Comment, error)
+	GetComments() ([]domain.Comment, error)
 	DeleteComment(uint) error
-	UpdateComment(*Comment) (*Comment, error)
+	UpdateComment(*domain.Comment) (*domain.Comment, error)
 }
 
 type Service interface {
-	SavePhoto(*Photo) (*Photo, error)
-	GetPhoto(uint) (*Photo, error)
-	GetPhotos() ([]Photo, error)
+	SavePhoto(*domain.Photo) (*domain.Photo, error)
+	GetPhoto(uint) (*domain.Photo, error)
+	GetPhotos() ([]domain.Photo, error)
 	DeletePhoto(uint) error
-	UpdatePhoto(*Photo) (*Photo, error)
+	UpdatePhoto(*domain.Photo) (*domain.Photo, error)
 	IsPhotoOwner(uint, uint) bool
 	IsPhotoExist(uint) bool
 
-	SaveComment(*Comment) (*Comment, error)
-	GetComment(uint) (*Comment, error)
-	GetComments() ([]Comment, error)
+	SaveComment(*domain.Comment) (*domain.Comment, error)
+	GetComment(uint) (*domain.Comment, error)
+	GetComments() ([]domain.Comment, error)
 	DeleteComment(uint) error
-	UpdateComment(*Comment) (*Comment, error)
+	UpdateComment(*domain.Comment) (*domain.Comment, error)
 	IsCommentOwner(uint, uint) bool
 	IsCommentExist(uint) bool
 }
@@ -49,15 +51,15 @@ func NewService(repo Repository) Service {
 	return &service{repo}
 }
 
-func (s *service) SavePhoto(photo *Photo) (*Photo, error) {
+func (s *service) SavePhoto(photo *domain.Photo) (*domain.Photo, error) {
 	return s.repo.SavePhoto(photo)
 }
 
-func (s *service) GetPhoto(id uint) (*Photo, error) {
+func (s *service) GetPhoto(id uint) (*domain.Photo, error) {
 	return s.repo.GetPhoto(id)
 }
 
-func (s *service) GetPhotos() ([]Photo, error) {
+func (s *service) GetPhotos() ([]domain.Photo, error) {
 	return s.repo.GetPhotos()
 }
 
@@ -65,7 +67,7 @@ func (s *service) DeletePhoto(id uint) error {
 	return s.repo.DeletePhoto(id)
 }
 
-func (s *service) UpdatePhoto(photo *Photo) (*Photo, error) {
+func (s *service) UpdatePhoto(photo *domain.Photo) (*domain.Photo, error) {
 	if !s.IsPhotoExist(photo.ID) {
 		return nil, ErrNotFound
 	}
@@ -95,15 +97,15 @@ func (s *service) IsPhotoExist(photoID uint) bool {
 	return err == nil
 }
 
-func (s *service) SaveComment(comment *Comment) (*Comment, error) {
+func (s *service) SaveComment(comment *domain.Comment) (*domain.Comment, error) {
 	return s.repo.SaveComment(comment)
 }
 
-func (s *service) GetComment(id uint) (*Comment, error) {
+func (s *service) GetComment(id uint) (*domain.Comment, error) {
 	return s.repo.GetComment(id)
 }
 
-func (s *service) GetComments() ([]Comment, error) {
+func (s *service) GetComments() ([]domain.Comment, error) {
 	return s.repo.GetComments()
 }
 
@@ -111,7 +113,7 @@ func (s *service) DeleteComment(id uint) error {
 	return s.repo.DeleteComment(id)
 }
 
-func (s *service) UpdateComment(comment *Comment) (*Comment, error) {
+func (s *service) UpdateComment(comment *domain.Comment) (*domain.Comment, error) {
 	if !s.IsCommentExist(comment.ID) {
 		return nil, ErrNotFound
 	}

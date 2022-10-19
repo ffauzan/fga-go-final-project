@@ -1,15 +1,18 @@
 package comment
 
-import "errors"
+import (
+	"errors"
+	"final-project/pkg/domain"
+)
 
 type Repository interface {
-	SaveComment(comment *Comment) (*Comment, error)
-	GetCommentByID(commentID uint) (*Comment, error)
-	GetComments() ([]Comment, error)
+	SaveComment(comment *domain.Comment) (*domain.Comment, error)
+	GetCommentByID(commentID uint) (*domain.Comment, error)
+	GetComments() ([]domain.Comment, error)
 	DeleteComment(commentID uint) error
-	UpdateComment(comment *Comment) (*Comment, error)
-	GetUserByID(userID uint) (*User, error)
-	GetPhotoByID(photoID uint) (*Photo, error)
+	UpdateComment(comment *domain.Comment) (*domain.Comment, error)
+	GetUserByID(userID uint) (*domain.User, error)
+	GetPhotoByID(photoID uint) (*domain.Photo, error)
 }
 
 type AuthService interface {
@@ -20,9 +23,9 @@ type AuthService interface {
 }
 
 type Service interface {
-	AddComment(userID uint, photoID uint, message string) (*Comment, error)
-	GetCommentsOfUser(userID uint) ([]Comment, error)
-	UpdateComment(userID uint, commentID uint, message string) (*Comment, error)
+	AddComment(userID uint, photoID uint, message string) (*domain.Comment, error)
+	GetCommentsOfUser(userID uint) ([]domain.Comment, error)
+	UpdateComment(userID uint, commentID uint, message string) (*domain.Comment, error)
 	DeleteComment(userID uint, commentID uint) error
 }
 
@@ -38,7 +41,7 @@ func NewService(repo Repository, authService AuthService) Service {
 	}
 }
 
-func (s *service) AddComment(userID uint, photoID uint, message string) (*Comment, error) {
+func (s *service) AddComment(userID uint, photoID uint, message string) (*domain.Comment, error) {
 	// Check if user exist
 	_, err := s.repo.GetUserByID(userID)
 	if err != nil {
@@ -52,7 +55,7 @@ func (s *service) AddComment(userID uint, photoID uint, message string) (*Commen
 	}
 
 	// Create comment
-	comment := &Comment{
+	comment := &domain.Comment{
 		UserID:  userID,
 		PhotoID: photoID,
 		Message: message,
@@ -62,7 +65,7 @@ func (s *service) AddComment(userID uint, photoID uint, message string) (*Commen
 	return s.repo.SaveComment(comment)
 }
 
-func (s *service) GetCommentsOfUser(userID uint) ([]Comment, error) {
+func (s *service) GetCommentsOfUser(userID uint) ([]domain.Comment, error) {
 	// Check if user exist
 	_, err := s.repo.GetUserByID(userID)
 	if err != nil {
@@ -73,7 +76,7 @@ func (s *service) GetCommentsOfUser(userID uint) ([]Comment, error) {
 	return s.repo.GetComments()
 }
 
-func (s *service) UpdateComment(userID uint, commentID uint, message string) (*Comment, error) {
+func (s *service) UpdateComment(userID uint, commentID uint, message string) (*domain.Comment, error) {
 	// Check if user exist
 	_, err := s.repo.GetUserByID(userID)
 	if err != nil {
