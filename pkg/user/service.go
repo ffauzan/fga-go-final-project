@@ -25,6 +25,7 @@ func NewService(
 	authService domain.AuthService,
 	// validatorService ValidatorService,
 ) domain.UserService {
+	log.Println("user service created")
 	return &service{
 		repo:          repo,
 		cryptoService: cryptoService,

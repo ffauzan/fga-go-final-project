@@ -12,6 +12,7 @@ import (
 )
 
 func main() {
+	PORT := "8080"
 	// This sensitive information is written here for the convenience of this assignment
 	dsn := "falfal:Pasword!2@tcp(mysql-dev-db.airy.my.id:3306)/fga_go_final?charset=utf8mb4&parseTime=True&loc=Local"
 
@@ -37,6 +38,8 @@ func main() {
 	// Create router
 	router := rest.NewRouter(&userService)
 
-	http.ListenAndServe(":8080", router)
+	// Start server
+	log.Println("Starting server on port " + PORT)
+	http.ListenAndServe(":"+PORT, router)
 
 }

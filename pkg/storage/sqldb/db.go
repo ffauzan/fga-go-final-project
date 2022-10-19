@@ -1,6 +1,8 @@
 package sqldb
 
 import (
+	"log"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -10,6 +12,7 @@ type Storage struct {
 }
 
 func NewStorage(dsn string) (*Storage, error) {
+	log.Println("Connecting to database...")
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
@@ -19,6 +22,7 @@ func NewStorage(dsn string) (*Storage, error) {
 	db.AutoMigrate(&User{})
 	// db.AutoMigrate(&Order{})
 
+	log.Println("Connected to database")
 	return &Storage{
 		DB: db,
 	}, nil

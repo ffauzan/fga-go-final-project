@@ -2,6 +2,7 @@ package sqldb
 
 import (
 	"final-project/pkg/domain"
+	"log"
 	"time"
 
 	"gorm.io/gorm"
@@ -34,6 +35,7 @@ type UserRepository struct {
 }
 
 func NewUserRepository(db *gorm.DB) domain.UserRepository {
+	log.Println("UserRepository created")
 	return &UserRepository{
 		db: db,
 	}
