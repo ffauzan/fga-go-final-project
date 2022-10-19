@@ -3,47 +3,33 @@ package user
 import (
 	"errors"
 	"final-project/pkg/domain"
+	"log"
 )
 
-type CryptoService interface {
-	HashPassword(password string) (string, error)
-	VerifyPassword(plaintext string, hashed string) error
-}
-
-type ValidatorService interface {
-	ValidateUser(user *domain.User) error
-	ValidateLoginRequest(req *domain.LoginRequest) error
-	ValidateRegisterRequest(req *domain.RegisterRequest) error
-}
-
-type AuthService interface {
-	GenerateToken(user *domain.User) (*string, error)
-	IsTokenValid(token string) (bool, error)
-	GetUserIDFromToken(token string) (uint, error)
-	IsUserCanCreate(userID uint, entity *interface{}) bool
-	IsUserCanAccess(userID uint, entity *interface{}) bool
-	IsUserCanUpdate(userID uint, entity *interface{}) bool
-	IsUserCanDelete(userID uint, entity *interface{}) bool
-}
+// type ValidatorService interface {
+// 	ValidateUser(user *domain.User) error
+// 	ValidateLoginRequest(req *domain.LoginRequest) error
+// 	ValidateRegisterRequest(req *domain.RegisterRequest) error
+// }
 
 type service struct {
 	repo          domain.UserRepository
-	cryptoService CryptoService
-	authService   AuthService
-	validator     ValidatorService
+	cryptoService domain.CryptoService
+	authService   domain.AuthService
+	// validator     ValidatorService
 }
 
 func NewService(
 	repo domain.UserRepository,
-	cryptoService CryptoService,
-	authService AuthService,
-	validatorService ValidatorService,
+	cryptoService domain.CryptoService,
+	authService domain.AuthService,
+	// validatorService ValidatorService,
 ) domain.UserService {
 	return &service{
 		repo:          repo,
 		cryptoService: cryptoService,
 		authService:   authService,
-		validator:     validatorService,
+		// validator:     validatorService,
 	}
 }
 
@@ -101,15 +87,16 @@ func (s *service) Register(req *domain.RegisterRequest) (*domain.User, error) {
 
 func (s *service) Login(user *domain.LoginRequest) (*string, error) {
 	// validate login request
-	if err := s.validator.ValidateLoginRequest(user); err != nil {
-		return nil, err
-	}
+	// if err := s.validator.ValidateLoginRequest(user); err != nil {
+	// 	return nil, err
+	// }
 
 	// get user by username
 	userFromDB, err := s.repo.GetUserByUsername(user.Username)
 	if err != nil {
 		return nil, err
 	}
+	log.Println(userFromDB)
 
 	// verify password
 	err = s.cryptoService.VerifyPassword(user.Password, userFromDB.Password)
@@ -118,10 +105,10 @@ func (s *service) Login(user *domain.LoginRequest) (*string, error) {
 	}
 
 	// generate token
-	token, err := s.authService.GenerateToken(userFromDB)
+	token, err := s.authService.GenerateToken(userFromDB.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	return token, nil
+	return &token, nil
 }

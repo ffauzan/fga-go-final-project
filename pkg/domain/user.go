@@ -49,3 +49,19 @@ type UserRepository interface {
 	IsUsernameExist(username string) bool
 	IsEmailExist(email string) bool
 }
+
+type AuthService interface {
+	// GenerateToken(user *User) (*string, error)
+	GenerateToken(userID uint) (string, error)
+	// IsTokenValid(token string) (bool, error)
+	// GetUserIDFromToken(token string) (uint, error)
+	// IsUserCanCreate(userID uint, entity *interface{}) bool
+	// IsUserCanAccess(userID uint, entity *interface{}) bool
+	// IsUserCanUpdate(userID uint, entity *interface{}) bool
+	// IsUserCanDelete(userID uint, entity *interface{}) bool
+}
+
+type CryptoService interface {
+	HashPassword(password string) (string, error)
+	VerifyPassword(plaintext string, hashed string) error
+}
