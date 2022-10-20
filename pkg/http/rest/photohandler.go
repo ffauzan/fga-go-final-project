@@ -3,6 +3,7 @@ package rest
 import (
 	"final-project/pkg/domain"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,11 +16,27 @@ type AddPhotoRequest struct {
 
 type PhotoHandler struct {
 	photoService domain.PhotoService
+	userService  domain.UserService
 }
 
-func NewPhotoHandler(photoService domain.PhotoService) *PhotoHandler {
+type PhotoOfUserResponse struct {
+	ID        uint      `json:"id"`
+	Title     string    `json:"title"`
+	Caption   string    `json:"caption"`
+	PhotoUrl  string    `json:"photo_url"`
+	UserID    uint      `json:"user_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	User      struct {
+		Email    string `json:"email"`
+		Username string `json:"username"`
+	} `json:"User"`
+}
+
+func NewPhotoHandler(photoService domain.PhotoService, userService domain.UserService) *PhotoHandler {
 	return &PhotoHandler{
 		photoService: photoService,
+		userService:  userService,
 	}
 }
 
@@ -54,4 +71,51 @@ func (h *PhotoHandler) AddPhoto(c *gin.Context) {
 		"user_id":    photo.UserID,
 		"created_at": photo.CreatedAt,
 	})
+}
+
+func (h *PhotoHandler) GetPhotos(c *gin.Context) {
+	// Get currentUserID from context
+	currentUserID := c.MustGet("currentUserID").(uint)
+
+	// Get photos of current user
+	photos, err := h.photoService.GetPhotosByUserID(currentUserID)
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusInternalServerError)
+		return
+	}
+
+	// Get the user corressponding to the userID
+	user, err := h.userService.GetUserByID(currentUserID)
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusInternalServerError)
+		return
+	}
+
+	// Format json response
+	photosOfUserResponse := formatPhotosOfUser(*user, *photos)
+
+	c.JSON(http.StatusOK, photosOfUserResponse)
+}
+
+func formatPhotosOfUser(user domain.User, photos []domain.Photo) []PhotoOfUserResponse {
+	var photosOfUser []PhotoOfUserResponse
+	for _, photo := range photos {
+		photosOfUser = append(photosOfUser, PhotoOfUserResponse{
+			ID:        photo.ID,
+			Title:     photo.Title,
+			Caption:   photo.Caption,
+			PhotoUrl:  photo.PhotoUrl,
+			UserID:    photo.UserID,
+			CreatedAt: photo.CreatedAt,
+			UpdatedAt: photo.UpdatedAt,
+			User: struct {
+				Email    string `json:"email"`
+				Username string `json:"username"`
+			}{
+				Email:    user.Email,
+				Username: user.Username,
+			},
+		})
+	}
+	return photosOfUser
 }

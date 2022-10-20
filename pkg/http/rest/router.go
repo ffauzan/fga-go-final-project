@@ -36,11 +36,12 @@ func NewRouter(
 	}
 
 	// Photo handler routes
-	photoHandler := NewPhotoHandler(*photoService)
+	photoHandler := NewPhotoHandler(*photoService, *userService)
 	photoRouter := r.Group("/photos")
 	{
 		photoRouter.Use(AuthMiddleware(*authService))
 		photoRouter.POST("/", photoHandler.AddPhoto)
+		photoRouter.GET("/", photoHandler.GetPhotos)
 	}
 
 	return r
