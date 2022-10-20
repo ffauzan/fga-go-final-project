@@ -29,8 +29,8 @@ type PhotoService interface {
 
 type PhotoRepository interface {
 	SavePhoto(photo *Photo) (*Photo, error)
-	GetPhotoById(photoID uint) (*Photo, error)
+	GetPhotoByID(photoID uint) (*Photo, error)
 	UpdatePhoto(photo *Photo) (*Photo, error)
 	GetPhotosByUserID(userID uint) (*[]Photo, error)
-	DeletePhotoById(photoID uint) error
+	DeletePhotoByID(photoID uint) error
 }

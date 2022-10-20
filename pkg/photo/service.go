@@ -25,7 +25,7 @@ func (s *service) SavePhoto(userID uint, photo *domain.AddPhotoRequest) (*domain
 }
 
 func (s *service) GetPhotoByID(photoID uint) (*domain.Photo, error) {
-	return s.repo.GetPhotoById(photoID)
+	return s.repo.GetPhotoByID(photoID)
 }
 
 func (s *service) GetPhotosByUserID(userID uint) (*[]domain.Photo, error) {
@@ -44,5 +44,5 @@ func (s *service) UpdatePhoto(photoID uint, newPhoto *domain.AddPhotoRequest) (*
 }
 
 func (s *service) DeletePhoto(photoID uint) error {
-	return s.repo.DeletePhotoById(photoID)
+	return s.repo.DeletePhotoByID(photoID)
 }
