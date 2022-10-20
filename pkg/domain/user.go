@@ -46,7 +46,7 @@ type UserRepository interface {
 	GetUserByID(userID uint) (*User, error)
 	GetUserByUsername(username string) (*User, error)
 	DeleteUserByID(userID uint) error
-	UpdateUser(userID *User) (*User, error)
+	UpdateUser(user *User) (*User, error)
 	IsUsernameExist(username string) bool
 	IsEmailExist(email string) bool
 }
