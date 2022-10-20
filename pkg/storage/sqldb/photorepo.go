@@ -102,15 +102,6 @@ func (r *PhotoRepository) GetPhotosByUserID(userId uint) (*[]domain.Photo, error
 	return &photos, nil
 }
 
-func (r *PhotoRepository) DeletePhotoByID(photoID uint) error {
-	err := r.db.Delete(&Photo{}, photoID).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (r *PhotoRepository) UpdatePhoto(photo *domain.Photo) (*domain.Photo, error) {
 	err := r.db.Model(Photo{}).Where("id = ?", photo.ID).Updates(Photo{
 		Title:     photo.Title,
@@ -124,4 +115,13 @@ func (r *PhotoRepository) UpdatePhoto(photo *domain.Photo) (*domain.Photo, error
 	}
 
 	return photo, nil
+}
+
+func (r *PhotoRepository) DeletePhotoByID(photoID uint) error {
+	err := r.db.Delete(&Photo{}, photoID).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

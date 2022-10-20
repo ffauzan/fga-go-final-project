@@ -127,7 +127,7 @@ func (h *PhotoHandler) UpdatePhoto(c *gin.Context) {
 	}
 
 	if photo.UserID != currentUserID {
-		SendErrorResponse(c, errors.New("you don't have access to this photo"), http.StatusUnauthorized)
+		SendErrorResponse(c, errors.New("insufficient privileges"), http.StatusUnauthorized)
 		return
 	}
 
@@ -150,5 +150,40 @@ func (h *PhotoHandler) UpdatePhoto(c *gin.Context) {
 		"photo_url":  photo.PhotoUrl,
 		"user_id":    photo.UserID,
 		"updated_at": photo.UpdatedAt,
+	})
+}
+
+func (h *PhotoHandler) DeletePhoto(c *gin.Context) {
+	// Get photoID from URL
+	photoID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	// Get currentUserID from context
+	currentUserID := c.MustGet("currentUserID").(uint)
+
+	// Check if photo userID equal to current userID
+	photo, err := h.photoService.GetPhotoByID(uint(photoID))
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusInternalServerError)
+		return
+	}
+
+	if photo.UserID != currentUserID {
+		SendErrorResponse(c, errors.New("insufficient privileges"), http.StatusUnauthorized)
+		return
+	}
+
+	// Delete photo
+	err = h.photoService.DeletePhoto(uint(photoID))
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "Your photo has been successfully deleted",
 	})
 }

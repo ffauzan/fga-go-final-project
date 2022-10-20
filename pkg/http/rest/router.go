@@ -43,6 +43,7 @@ func NewRouter(
 		photoRouter.POST("/", photoHandler.AddPhoto)
 		photoRouter.GET("/", photoHandler.GetPhotos)
 		photoRouter.PUT("/:id", photoHandler.UpdatePhoto)
+		photoRouter.DELETE("/:id", photoHandler.DeletePhoto)
 	}
 
 	return r
