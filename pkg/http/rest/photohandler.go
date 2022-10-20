@@ -27,10 +27,12 @@ type PhotoOfUserResponse struct {
 	UserID    uint      `json:"user_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-	User      struct {
-		Email    string `json:"email"`
-		Username string `json:"username"`
-	} `json:"User"`
+	User      PhotoUser `json:"User"`
+}
+
+type PhotoUser struct {
+	Email    string `json:"email"`
+	Username string `json:"username"`
 }
 
 func NewPhotoHandler(photoService domain.PhotoService, userService domain.UserService) *PhotoHandler {
@@ -95,27 +97,4 @@ func (h *PhotoHandler) GetPhotos(c *gin.Context) {
 	photosOfUserResponse := formatPhotosOfUser(*user, *photos)
 
 	c.JSON(http.StatusOK, photosOfUserResponse)
-}
-
-func formatPhotosOfUser(user domain.User, photos []domain.Photo) []PhotoOfUserResponse {
-	var photosOfUser []PhotoOfUserResponse
-	for _, photo := range photos {
-		photosOfUser = append(photosOfUser, PhotoOfUserResponse{
-			ID:        photo.ID,
-			Title:     photo.Title,
-			Caption:   photo.Caption,
-			PhotoUrl:  photo.PhotoUrl,
-			UserID:    photo.UserID,
-			CreatedAt: photo.CreatedAt,
-			UpdatedAt: photo.UpdatedAt,
-			User: struct {
-				Email    string `json:"email"`
-				Username string `json:"username"`
-			}{
-				Email:    user.Email,
-				Username: user.Username,
-			},
-		})
-	}
-	return photosOfUser
 }
