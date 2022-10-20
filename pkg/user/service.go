@@ -34,33 +34,6 @@ func NewService(
 	}
 }
 
-func (s *service) DeleteUser(userID uint) error {
-	// check if user exist
-	if !s.IsUserExist(userID) {
-		return errors.New("user not found")
-	}
-	return s.repo.DeleteUserByID(userID)
-}
-
-func (s *service) UpdateUser(userID uint, user *domain.UpdateUserRequest) (*domain.User, error) {
-	// get user from db by id
-	userFromDB, err := s.repo.GetUserByID(userID)
-	if err != nil {
-		return nil, err
-	}
-
-	// update user
-	userFromDB.Username = user.Username
-	userFromDB.Email = user.Email
-
-	return s.repo.UpdateUser(userFromDB)
-}
-
-func (s *service) IsUserExist(id uint) bool {
-	_, err := s.repo.GetUserByID(id)
-	return err == nil
-}
-
 func (s *service) Register(req *domain.RegisterRequest) (*domain.User, error) {
 	// check if username & email already exist
 	if s.repo.IsUsernameExist(req.Username) {
@@ -111,4 +84,35 @@ func (s *service) Login(user *domain.LoginRequest) (*string, error) {
 	}
 
 	return &token, nil
+}
+
+func (s *service) UpdateUser(userID uint, user *domain.UpdateUserRequest) (*domain.User, error) {
+	// get user from db by id
+	userFromDB, err := s.repo.GetUserByID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	// update user
+	userFromDB.Username = user.Username
+	userFromDB.Email = user.Email
+
+	return s.repo.UpdateUser(userFromDB)
+}
+
+func (s *service) DeleteUser(userID uint) error {
+	// check if user exist
+	if !s.IsUserExist(userID) {
+		return errors.New("user not found")
+	}
+	return s.repo.DeleteUserByID(userID)
+}
+
+func (s *service) IsUserExist(id uint) bool {
+	_, err := s.repo.GetUserByID(id)
+	return err == nil
+}
+
+func (s *service) GetUserByID(id uint) (*domain.User, error) {
+	return s.repo.GetUserByID(id)
 }

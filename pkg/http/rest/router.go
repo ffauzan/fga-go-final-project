@@ -29,7 +29,8 @@ func NewRouter(
 		{
 			protectedUserRouter.Use(AuthMiddleware(*authService))
 			protectedUserRouter.PUT("/:id", userHandler.UpdateUser)
-			// r.DELETE("/:id", userHandler.DeleteUser)
+			protectedUserRouter.DELETE("/", userHandler.DeleteUser)
+			protectedUserRouter.GET("/", userHandler.GetUser)
 		}
 	}
 

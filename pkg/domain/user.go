@@ -38,6 +38,7 @@ type UserService interface {
 	IsUserExist(userID uint) bool
 	Register(req *RegisterRequest) (*User, error)
 	Login(req *LoginRequest) (*string, error)
+	GetUserByID(userID uint) (*User, error)
 }
 
 type UserRepository interface {

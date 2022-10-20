@@ -127,3 +127,35 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	})
 
 }
+
+func (h *UserHandler) DeleteUser(c *gin.Context) {
+	// Get userID from context
+	currentUserID := c.MustGet("currentUserID").(uint)
+
+	err := h.userService.DeleteUser(uint(currentUserID))
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]string{
+		"message": "Your account has been successfully deleted",
+	})
+}
+
+func (h *UserHandler) GetUser(c *gin.Context) {
+	// Get userID from context
+	currentUserID := c.MustGet("currentUserID").(uint)
+
+	user, err := h.userService.GetUserByID(uint(currentUserID))
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"id":       user.ID,
+		"email":    user.Email,
+		"username": user.Username,
+	})
+}
