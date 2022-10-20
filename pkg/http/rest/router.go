@@ -42,6 +42,7 @@ func NewRouter(
 		photoRouter.Use(AuthMiddleware(*authService))
 		photoRouter.POST("/", photoHandler.AddPhoto)
 		photoRouter.GET("/", photoHandler.GetPhotos)
+		photoRouter.PUT("/:id", photoHandler.UpdatePhoto)
 	}
 
 	return r
