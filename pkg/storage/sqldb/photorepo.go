@@ -19,15 +19,6 @@ type Photo struct {
 	Comments  []Comment `gorm:"foreignKey:PhotoID"`
 }
 
-type Comment struct {
-	ID        uint   `gorm:"primaryKey"`
-	UserID    uint   `gorm:"not null"`
-	PhotoID   uint   `gorm:"not null"`
-	Message   string `gorm:"not null"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-}
-
 type PhotoRepository struct {
 	db *gorm.DB
 }
