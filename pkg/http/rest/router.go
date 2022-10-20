@@ -15,6 +15,7 @@ type BaseResponse struct {
 func NewRouter(
 	userService *domain.UserService,
 	authService *domain.AuthService,
+	photoService *domain.PhotoService,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -32,6 +33,14 @@ func NewRouter(
 			protectedUserRouter.DELETE("/", userHandler.DeleteUser)
 			protectedUserRouter.GET("/", userHandler.GetUser)
 		}
+	}
+
+	// Photo handler routes
+	photoHandler := NewPhotoHandler(*photoService)
+	photoRouter := r.Group("/photos")
+	{
+		photoRouter.Use(AuthMiddleware(*authService))
+		photoRouter.POST("/", photoHandler.AddPhoto)
 	}
 
 	return r

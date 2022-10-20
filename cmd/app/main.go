@@ -4,6 +4,7 @@ import (
 	"final-project/pkg/auth"
 	"final-project/pkg/crypto"
 	"final-project/pkg/http/rest"
+	"final-project/pkg/photo"
 	"final-project/pkg/storage/sqldb"
 	"final-project/pkg/user"
 	"net/http"
@@ -28,6 +29,9 @@ func main() {
 	// Create user repository
 	userRepo := sqldb.NewUserRepository(storage.DB)
 
+	// Create photo repository
+	photoRepo := sqldb.NewPhotoRepository(storage.DB)
+
 	// Create Auth service
 	authService := auth.NewAuthService()
 
@@ -37,10 +41,14 @@ func main() {
 	// Create user service
 	userService := user.NewService(userRepo, cryptoService, authService)
 
+	// Creatte Photo service
+	photoService := photo.NewService(photoRepo)
+
 	// Create router
 	router := rest.NewRouter(
 		&userService,
 		&authService,
+		&photoService,
 	)
 
 	// Start server
