@@ -2,6 +2,7 @@ package main
 
 import (
 	"final-project/pkg/auth"
+	"final-project/pkg/comment"
 	"final-project/pkg/crypto"
 	"final-project/pkg/http/rest"
 	"final-project/pkg/photo"
@@ -26,29 +27,24 @@ func main() {
 	}
 	defer storage.Close()
 
-	// Create user repository
+	// Create repository
 	userRepo := sqldb.NewUserRepository(storage.DB)
-
-	// Create photo repository
 	photoRepo := sqldb.NewPhotoRepository(storage.DB)
+	commentRepo := sqldb.NewCommentRepository(storage.DB)
 
-	// Create Auth service
+	// Create service
 	authService := auth.NewAuthService()
-
-	// Create Crypto service
 	cryptoService := crypto.NewCryptoService()
-
-	// Create user service
 	userService := user.NewService(userRepo, cryptoService, authService)
-
-	// Creatte Photo service
 	photoService := photo.NewService(photoRepo)
+	commentService := comment.NewService(commentRepo)
 
 	// Create router
 	router := rest.NewRouter(
 		&userService,
 		&authService,
 		&photoService,
+		&commentService,
 	)
 
 	// Start server

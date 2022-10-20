@@ -16,6 +16,7 @@ func NewRouter(
 	userService *domain.UserService,
 	authService *domain.AuthService,
 	photoService *domain.PhotoService,
+	commentService *domain.CommentService,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -44,6 +45,14 @@ func NewRouter(
 		photoRouter.GET("/", photoHandler.GetPhotos)
 		photoRouter.PUT("/:id", photoHandler.UpdatePhoto)
 		photoRouter.DELETE("/:id", photoHandler.DeletePhoto)
+	}
+
+	// Comment handler routes
+	commentHandler := NewCommentHandler(*commentService, *userService, *photoService)
+	commentRouter := r.Group("/comments")
+	{
+		commentRouter.Use(AuthMiddleware(*authService))
+		commentRouter.POST("/", commentHandler.AddComment)
 	}
 
 	return r
