@@ -140,3 +140,39 @@ func (h *SocialMediaHandler) UpdateSocialMedia(c *gin.Context) {
 		"social_media_url": socialMedia.SocialMediaUrl,
 	})
 }
+
+func (h *SocialMediaHandler) DeleteSocialMedia(c *gin.Context) {
+	// Get socialMediaID from URL
+	socialMediaID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	// Get the user ID from the request context
+	currentUserID := c.MustGet("currentUserID").(uint)
+
+	// Check if social media userID is equal to current userID
+	socialMedia, err := h.SocialMediaService.GetSocialMediaByID(uint(socialMediaID))
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	if socialMedia.UserID != currentUserID {
+		SendErrorResponse(c, errors.New("insufficient privileges"), http.StatusUnauthorized)
+		return
+	}
+
+	// Delete the social media
+	err = h.SocialMediaService.DeleteSocialMedia(uint(socialMediaID))
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	// Send the response
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "Your social media has successfully been deleted",
+	})
+}

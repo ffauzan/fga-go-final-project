@@ -67,6 +67,7 @@ func NewRouter(
 		socialmediaRouter.POST("/", socialmediaHandler.AddSocialMedia)
 		socialmediaRouter.PUT("/:id", socialmediaHandler.UpdateSocialMedia)
 		socialmediaRouter.GET("/", socialmediaHandler.GetSocialMedias)
+		socialmediaRouter.DELETE("/:id", socialmediaHandler.DeleteSocialMedia)
 	}
 
 	return r
