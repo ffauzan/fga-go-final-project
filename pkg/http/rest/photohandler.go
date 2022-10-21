@@ -11,14 +11,9 @@ import (
 )
 
 type AddPhotoRequest struct {
-	Title    string `json:"title"`
+	Title    string `json:"title" binding:"required"`
 	Caption  string `json:"caption"`
-	PhotoUrl string `json:"photo_url"`
-}
-
-type PhotoHandler struct {
-	photoService domain.PhotoService
-	userService  domain.UserService
+	PhotoUrl string `json:"photo_url" binding:"required"`
 }
 
 type PhotoOfUserResponse struct {
@@ -35,6 +30,11 @@ type PhotoOfUserResponse struct {
 type PhotoUser struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
+}
+
+type PhotoHandler struct {
+	photoService domain.PhotoService
+	userService  domain.UserService
 }
 
 func NewPhotoHandler(photoService domain.PhotoService, userService domain.UserService) *PhotoHandler {

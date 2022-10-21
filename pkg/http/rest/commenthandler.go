@@ -11,12 +11,12 @@ import (
 )
 
 type AddCommentRequest struct {
-	Message string `json:"message"`
-	PhotoID uint   `json:"photo_id"`
+	Message string `json:"message" binding:"required"`
+	PhotoID uint   `json:"photo_id" binding:"required,gt=0"`
 }
 
 type UpdateCommentRequest struct {
-	Message string `json:"message"`
+	Message string `json:"message" binding:"required"`
 }
 
 type CommentOfUserResponse struct {
@@ -102,7 +102,7 @@ func (h *CommentHandler) UpdateComment(c *gin.Context) {
 	// Get commentID from path
 	commentID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		SendErrorResponse(c, err, http.StatusBadRequest)
+		SendErrorResponse(c, errors.New("invalid comment id"), http.StatusBadRequest)
 		return
 	}
 

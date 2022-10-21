@@ -8,20 +8,20 @@ import (
 )
 
 type RegisterRequest struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Age      int    `json:"age"`
-	Password string `json:"password"`
+	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Age      int    `json:"age" binding:"required,gt=8"`
+	Password string `json:"password" binding:"required,min=6"`
 }
 
 type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required,min=6"`
 }
 
 type UpdateUserRequest struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
+	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
 }
 
 type UserHandler struct {
@@ -37,7 +37,6 @@ func NewUserHandler(userService domain.UserService) *UserHandler {
 // Register is a handler for user registration end point
 func (h *UserHandler) Register(c *gin.Context) {
 	// Bind request body to RegisterRequest struct
-	// TODO: Add validation
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		SendErrorResponse(c, err, http.StatusBadRequest)
