@@ -3,6 +3,7 @@ package rest
 import (
 	"final-project/pkg/domain"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,6 +11,22 @@ import (
 type AddSocialMediaRequest struct {
 	Name           string `json:"name"`
 	SocialMediaUrl string `json:"social_media_url"`
+}
+
+type SocialMediaOfUserResponse struct {
+	ID             uint            `json:"id"`
+	Name           string          `json:"name"`
+	SocialMediaUrl string          `json:"social_media_url"`
+	UserID         uint            `json:"user_id"`
+	CreatedAt      time.Time       `json:"created_at"`
+	UpdatedAt      time.Time       `json:"updated_at"`
+	User           SocialMediaUser `json:"User"`
+}
+
+type SocialMediaUser struct {
+	ID              uint   `json:"id"`
+	Username        string `json:"username"`
+	ProfileImageUrl string `json:"profile_image_url"`
 }
 
 type SocialMediaHandler struct {
@@ -49,5 +66,31 @@ func (h *SocialMediaHandler) AddSocialMedia(c *gin.Context) {
 		"social_media_url": socialMedia.SocialMediaUrl,
 		"user_id":          socialMedia.UserID,
 		"createdAt":        socialMedia.CreatedAt,
+	})
+}
+
+func (h *SocialMediaHandler) GetSocialMedias(c *gin.Context) {
+	// Get the user ID from the request context
+	currentUserID := c.MustGet("currentUserID").(uint)
+
+	// Get user
+	user, err := h.UserService.GetUserByID(currentUserID)
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	// Get social medias
+	socialMedias, err := h.SocialMediaService.GetSocialMediasByUserID(currentUserID)
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	res := formatSocialMediaOfUser(user, socialMedias)
+
+	// Send the response
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"social_medias": res,
 	})
 }

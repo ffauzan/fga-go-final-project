@@ -54,3 +54,23 @@ func formatCommentsOfUser(user *domain.User, comments *[]domain.Comment, photoSe
 	}
 	return commentsOfUser
 }
+
+func formatSocialMediaOfUser(user *domain.User, socialMedia *[]domain.SocialMedia) []SocialMediaOfUserResponse {
+	var socialMediaOfUser []SocialMediaOfUserResponse
+	for _, sm := range *socialMedia {
+		socialMediaOfUser = append(socialMediaOfUser, SocialMediaOfUserResponse{
+			ID:             sm.ID,
+			Name:           sm.Name,
+			SocialMediaUrl: sm.SocialMediaUrl,
+			UserID:         sm.UserID,
+			CreatedAt:      sm.CreatedAt,
+			UpdatedAt:      sm.UpdatedAt,
+			User: SocialMediaUser{
+				ID:              user.ID,
+				Username:        user.Username,
+				ProfileImageUrl: "I don't know where to get this",
+			},
+		})
+	}
+	return socialMediaOfUser
+}

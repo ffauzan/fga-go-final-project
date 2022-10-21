@@ -65,6 +65,7 @@ func NewRouter(
 	{
 		socialmediaRouter.Use(AuthMiddleware(*authService))
 		socialmediaRouter.POST("/", socialmediaHandler.AddSocialMedia)
+		socialmediaRouter.GET("/", socialmediaHandler.GetSocialMedias)
 	}
 
 	return r
