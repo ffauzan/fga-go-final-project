@@ -90,11 +90,56 @@ func (r *UserRepository) GetUserByUsername(username string) (*domain.User, error
 }
 
 func (r *UserRepository) DeleteUserByID(userID uint) error {
-	err := r.db.Delete(&User{}, userID).Error
+	// Transaction to delete user and all of his photos, comments, and social medias
+	tx := r.db.Begin()
+
+	// Delete social medias of user
+	err := tx.Where("user_id = ?", userID).Delete(&SocialMedia{}).Error
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
+	// Delete comments of user
+	err = tx.Where("user_id = ?", userID).Delete(&Comment{}).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Delete photos of user and all of its comments
+	// Get all photos of user
+	var photos []Photo
+	err = tx.Where("user_id = ?", userID).Find(&photos).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Delete all comments of photos
+	for _, photo := range photos {
+		err = tx.Where("photo_id = ?", photo.ID).Delete(&Comment{}).Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	// Delete photos of user
+	err = tx.Where("user_id = ?", userID).Delete(&Photo{}).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Delete user
+	err = tx.Where("id = ?", userID).Delete(&User{}).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
 	return nil
 }
 
