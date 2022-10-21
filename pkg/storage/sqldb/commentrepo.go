@@ -12,7 +12,7 @@ type Comment struct {
 	ID        uint   `gorm:"primaryKey"`
 	UserID    uint   `gorm:"not null"`
 	PhotoID   uint   `gorm:"not null"`
-	Message   string `gorm:"not null"`
+	Message   string `gorm:"not null;type:vachar(2048)"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

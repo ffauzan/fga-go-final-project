@@ -10,9 +10,9 @@ import (
 
 type Photo struct {
 	ID        uint   `gorm:"primaryKey"`
-	Title     string `gorm:"not null"`
-	Caption   string
-	PhotoUrl  string `gorm:"not null"`
+	Title     string `gorm:"not null;type:varchar(255)"`
+	Caption   string `gorm:"type:varchar(2048)"`
+	PhotoUrl  string `gorm:"not null;type:varchar(512)"`
 	UserID    uint   `gorm:"not null"`
 	CreatedAt time.Time
 	UpdatedAt time.Time

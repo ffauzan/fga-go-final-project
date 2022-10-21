@@ -9,8 +9,8 @@ import (
 
 type SocialMedia struct {
 	ID             uint   `gorm:"primaryKey"`
-	Name           string `gorm:"not null"`
-	SocialMediaUrl string `gorm:"not null"`
+	Name           string `gorm:"not null;type:varchar(255)"`
+	SocialMediaUrl string `gorm:"not null;type:varchar(512)"`
 	UserID         uint   `gorm:"not null"`
 	CreatedAt      time.Time
 	UpdatedAt      time.Time

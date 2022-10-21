@@ -8,10 +8,10 @@ import (
 )
 
 type RegisterRequest struct {
-	Username string `json:"username" binding:"required"`
-	Email    string `json:"email" binding:"required,email"`
-	Age      int    `json:"age" binding:"required,gt=8"`
-	Password string `json:"password" binding:"required,min=6"`
+	Username string `json:"username" binding:"required,max=255"`
+	Email    string `json:"email" binding:"required,email,max=255"`
+	Age      int    `json:"age" binding:"required,gt=8,lte=120"`
+	Password string `json:"password" binding:"required,min=6,max=255"`
 }
 
 type LoginRequest struct {

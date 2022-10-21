@@ -54,5 +54,4 @@ func main() {
 	// Start server
 	log.Println("Starting server on port " + PORT)
 	http.ListenAndServe(":"+PORT, router)
-
 }

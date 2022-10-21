@@ -11,8 +11,8 @@ import (
 )
 
 type AddSocialMediaRequest struct {
-	Name           string `json:"name" binding:"required"`
-	SocialMediaUrl string `json:"social_media_url" binding:"required"`
+	Name           string `json:"name" binding:"required,max=255"`
+	SocialMediaUrl string `json:"social_media_url" binding:"required,max=512,url"`
 }
 
 type SocialMediaOfUserResponse struct {

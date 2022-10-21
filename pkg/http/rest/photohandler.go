@@ -11,9 +11,9 @@ import (
 )
 
 type AddPhotoRequest struct {
-	Title    string `json:"title" binding:"required"`
-	Caption  string `json:"caption"`
-	PhotoUrl string `json:"photo_url" binding:"required"`
+	Title    string `json:"title" binding:"required,max=255"`
+	Caption  string `json:"caption" binding:"max=2048"`
+	PhotoUrl string `json:"photo_url" binding:"required,max=512,url"`
 }
 
 type PhotoOfUserResponse struct {

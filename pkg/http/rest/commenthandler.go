@@ -11,12 +11,12 @@ import (
 )
 
 type AddCommentRequest struct {
-	Message string `json:"message" binding:"required"`
+	Message string `json:"message" binding:"required max=2048"`
 	PhotoID uint   `json:"photo_id" binding:"required,gt=0"`
 }
 
 type UpdateCommentRequest struct {
-	Message string `json:"message" binding:"required"`
+	Message string `json:"message" binding:"required max=2048"`
 }
 
 type CommentOfUserResponse struct {
@@ -60,7 +60,6 @@ func NewCommentHandler(commentService domain.CommentService, userService domain.
 
 func (h *CommentHandler) AddComment(c *gin.Context) {
 	// Bind request body to AddCommentRequest struct
-	// TODO: Add validation
 	var req AddCommentRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		SendErrorResponse(c, err, http.StatusBadRequest)
