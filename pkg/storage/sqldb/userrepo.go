@@ -21,15 +21,6 @@ type User struct {
 	SocialMedias []SocialMedia `gorm:"foreignKey:UserID"`
 }
 
-type SocialMedia struct {
-	ID             uint   `gorm:"primaryKey"`
-	Name           string `gorm:"not null"`
-	SocialMediaUrl string `gorm:"not null"`
-	UserID         uint   `gorm:"not null"`
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-}
-
 type UserRepository struct {
 	db *gorm.DB
 }

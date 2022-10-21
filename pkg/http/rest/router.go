@@ -17,6 +17,7 @@ func NewRouter(
 	authService *domain.AuthService,
 	photoService *domain.PhotoService,
 	commentService *domain.CommentService,
+	socialMediaService *domain.SocialMediaService,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -56,6 +57,14 @@ func NewRouter(
 		commentRouter.PUT("/:id", commentHandler.UpdateComment)
 		commentRouter.DELETE("/:id", commentHandler.DeleteComment)
 		commentRouter.GET("/", commentHandler.GetCommentsByUserID)
+	}
+
+	// Socialmedia handler routes
+	socialmediaHandler := NewSocialMediaHandler(*socialMediaService, *userService)
+	socialmediaRouter := r.Group("/socialmedias")
+	{
+		socialmediaRouter.Use(AuthMiddleware(*authService))
+		socialmediaRouter.POST("/", socialmediaHandler.AddSocialMedia)
 	}
 
 	return r

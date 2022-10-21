@@ -6,6 +6,7 @@ import (
 	"final-project/pkg/crypto"
 	"final-project/pkg/http/rest"
 	"final-project/pkg/photo"
+	"final-project/pkg/socialmedia"
 	"final-project/pkg/storage/sqldb"
 	"final-project/pkg/user"
 	"net/http"
@@ -31,6 +32,7 @@ func main() {
 	userRepo := sqldb.NewUserRepository(storage.DB)
 	photoRepo := sqldb.NewPhotoRepository(storage.DB)
 	commentRepo := sqldb.NewCommentRepository(storage.DB)
+	socialMediaRepo := sqldb.NewSocialMediaRepository(storage.DB)
 
 	// Create service
 	authService := auth.NewAuthService()
@@ -38,6 +40,7 @@ func main() {
 	userService := user.NewService(userRepo, cryptoService, authService)
 	photoService := photo.NewService(photoRepo)
 	commentService := comment.NewService(commentRepo)
+	socialMediaService := socialmedia.NewService(socialMediaRepo)
 
 	// Create router
 	router := rest.NewRouter(
@@ -45,6 +48,7 @@ func main() {
 		&authService,
 		&photoService,
 		&commentService,
+		&socialMediaService,
 	)
 
 	// Start server

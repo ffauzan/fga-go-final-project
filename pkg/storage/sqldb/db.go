@@ -22,6 +22,7 @@ func NewStorage(dsn string) (*Storage, error) {
 	db.AutoMigrate(&User{})
 	db.AutoMigrate(&Photo{})
 	db.AutoMigrate(&Comment{})
+	db.AutoMigrate(&SocialMedia{})
 
 	log.Println("Connected to database")
 	return &Storage{
