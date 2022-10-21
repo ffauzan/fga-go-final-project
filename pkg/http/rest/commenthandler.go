@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"errors"
 	"final-project/pkg/domain"
 	"net/http"
 	"strconv"
@@ -155,4 +156,39 @@ func (h *CommentHandler) GetCommentsByUserID(c *gin.Context) {
 	commentResponses := formatCommentsOfUser(user, comments, h.photoService)
 
 	c.JSON(http.StatusOK, commentResponses)
+}
+
+func (h *CommentHandler) DeleteComment(c *gin.Context) {
+	// Get currentUserID from context
+	currentUserID := c.MustGet("currentUserID").(uint)
+
+	// Get commentID from path
+	commentID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	// Check if comment userID is equal to currentUserID
+	comment, err := h.commentService.GetCommentByID(uint(commentID))
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+	if comment.UserID != currentUserID {
+		SendErrorResponse(c, errors.New("insufficient privileges"), http.StatusUnauthorized)
+		return
+	}
+
+	// Delete comment
+	err = h.commentService.DeleteComment(uint(commentID))
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	// Send response
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "Your comment ahs been deleted successfully",
+	})
 }

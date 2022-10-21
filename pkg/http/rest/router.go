@@ -54,6 +54,7 @@ func NewRouter(
 		commentRouter.Use(AuthMiddleware(*authService))
 		commentRouter.POST("/", commentHandler.AddComment)
 		commentRouter.PUT("/:id", commentHandler.UpdateComment)
+		commentRouter.DELETE("/:id", commentHandler.DeleteComment)
 		commentRouter.GET("/", commentHandler.GetCommentsByUserID)
 	}
 
