@@ -24,6 +24,10 @@ func (s *service) AddComment(userID uint, photoID uint, message string) (*domain
 	return s.repo.SaveComment(comment)
 }
 
+func (s *service) GetCommentByID(commentID uint) (*domain.Comment, error) {
+	return s.repo.GetCommentByID(commentID)
+}
+
 func (s *service) GetCommentsByUserID(userID uint) (*[]domain.Comment, error) {
 	return s.repo.GetCommentsByUserID(userID)
 }

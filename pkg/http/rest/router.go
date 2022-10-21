@@ -53,6 +53,8 @@ func NewRouter(
 	{
 		commentRouter.Use(AuthMiddleware(*authService))
 		commentRouter.POST("/", commentHandler.AddComment)
+		commentRouter.PUT("/:id", commentHandler.UpdateComment)
+		commentRouter.GET("/", commentHandler.GetCommentsByUserID)
 	}
 
 	return r

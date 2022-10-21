@@ -3,6 +3,7 @@ package rest
 import (
 	"final-project/pkg/domain"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -83,4 +84,75 @@ func (h *CommentHandler) AddComment(c *gin.Context) {
 		"user_id":    comment.UserID,
 		"created_at": comment.CreatedAt,
 	})
+}
+
+func (h *CommentHandler) UpdateComment(c *gin.Context) {
+	// Bind request body to UpdateCommentRequest struct
+	// TODO: Add validation
+	var req UpdateCommentRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	// Get currentUserID from context
+	currentUserID := c.MustGet("currentUserID").(uint)
+
+	// Get commentID from path
+	commentID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	// Check if comment userID is equal to currentUserID
+	comment, err := h.commentService.GetCommentByID(uint(commentID))
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+	if comment.UserID != currentUserID {
+		SendErrorResponse(c, err, http.StatusUnauthorized)
+		return
+	}
+
+	// Update comment
+	comment, err = h.commentService.UpdateComment(uint(commentID), req.Message)
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	// Send response
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"id":         comment.ID,
+		"message":    comment.Message,
+		"photo_id":   comment.PhotoID,
+		"user_id":    comment.UserID,
+		"updated_at": comment.UpdatedAt,
+	})
+}
+
+func (h *CommentHandler) GetCommentsByUserID(c *gin.Context) {
+	// Get currentUserID from context
+	currentUserID := c.MustGet("currentUserID").(uint)
+
+	// Get comments
+	comments, err := h.commentService.GetCommentsByUserID(currentUserID)
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	// Get user
+	user, err := h.userService.GetUserByID(currentUserID)
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	// Send response
+	commentResponses := formatCommentsOfUser(user, comments, h.photoService)
+
+	c.JSON(http.StatusOK, commentResponses)
 }

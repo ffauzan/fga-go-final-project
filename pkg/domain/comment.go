@@ -16,6 +16,7 @@ type CommentService interface {
 	GetCommentsByUserID(userID uint) (*[]Comment, error)
 	UpdateComment(commentID uint, message string) (*Comment, error)
 	DeleteComment(commentID uint) error
+	GetCommentByID(commentID uint) (*Comment, error)
 }
 
 type CommentRepository interface {
