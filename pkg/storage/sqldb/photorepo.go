@@ -109,10 +109,18 @@ func (r *PhotoRepository) UpdatePhoto(photo *domain.Photo) (*domain.Photo, error
 }
 
 func (r *PhotoRepository) DeletePhotoByID(photoID uint) error {
-	err := r.db.Delete(&Photo{}, photoID).Error
-	if err != nil {
+	// Transaction to delete photo and its comments
+	tx := r.db.Begin()
+	if err := tx.Delete(&Comment{}, "photo_id = ?", photoID).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
+	if err := tx.Delete(&Photo{}, photoID).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
 
 	return nil
 }
