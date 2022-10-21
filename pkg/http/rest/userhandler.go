@@ -1,10 +1,8 @@
 package rest
 
 import (
-	"errors"
 	"final-project/pkg/domain"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -92,27 +90,18 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 // UpdateUser is a handler for updating user
 func (h *UserHandler) UpdateUser(c *gin.Context) {
+	// Bind request body to UpdateUserRequest struct
 	var req UpdateUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		SendErrorResponse(c, err, http.StatusBadRequest)
 		return
 	}
 
-	userID, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	if err != nil {
-		SendErrorResponse(c, err, http.StatusBadRequest)
-		return
-	}
-
-	// Compare userID from path param and userID from context
-	// If they are not equal, return error
+	// Get userID from context
 	currentUserID := c.MustGet("currentUserID").(uint)
-	if uint(userID) != currentUserID {
-		SendErrorResponse(c, errors.New("unauthorized"), http.StatusUnauthorized)
-		return
-	}
 
-	user, err := h.userService.UpdateUser(uint(userID), &domain.UpdateUserRequest{
+	// Call service to update user
+	user, err := h.userService.UpdateUser(currentUserID, &domain.UpdateUserRequest{
 		Username: req.Username,
 		Email:    req.Email,
 	})
