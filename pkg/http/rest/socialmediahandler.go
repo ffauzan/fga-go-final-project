@@ -1,8 +1,10 @@
 package rest
 
 import (
+	"errors"
 	"final-project/pkg/domain"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -92,5 +94,49 @@ func (h *SocialMediaHandler) GetSocialMedias(c *gin.Context) {
 	// Send the response
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"social_medias": res,
+	})
+}
+
+func (h *SocialMediaHandler) UpdateSocialMedia(c *gin.Context) {
+	// Bind the request body to the AddSocialMediaRequest struct
+	var req AddSocialMediaRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	// Get socialMediaID from URL
+	socialMediaID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	// Get the user ID from the request context
+	currentUserID := c.MustGet("currentUserID").(uint)
+
+	// Check if social media userID is equal to current userID
+	socialMedia, err := h.SocialMediaService.GetSocialMediaByID(uint(socialMediaID))
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	if socialMedia.UserID != currentUserID {
+		SendErrorResponse(c, errors.New("insufficient privileges"), http.StatusUnauthorized)
+		return
+	}
+
+	// Update the social media
+	socialMedia, err = h.SocialMediaService.UpdateSocialMedia(uint(socialMediaID), req.Name, req.SocialMediaUrl)
+	if err != nil {
+		SendErrorResponse(c, err, http.StatusBadRequest)
+		return
+	}
+
+	// Send the response
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"name":             socialMedia.Name,
+		"social_media_url": socialMedia.SocialMediaUrl,
 	})
 }
